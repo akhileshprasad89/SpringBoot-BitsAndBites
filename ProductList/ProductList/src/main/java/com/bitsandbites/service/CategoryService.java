@@ -7,6 +7,9 @@ import com.bitsandbites.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Stream;
+
 @Service
 public class CategoryService {
     @Autowired
@@ -18,4 +21,18 @@ public CategoryDto createCategory(CategoryDto categoryDto){
     CategoryDto categoryDto1 = CategoryMapper.toCategoryDto(save);
     return categoryDto1;
 }
+public List<CategoryDto> gatAllCat(){
+    List<CategoryDto> list = categoryRepository.findAll().stream().map(CategoryMapper::toCategoryDto).toList();
+    return list;
+}
+public CategoryDto getCategoryById(Long id){
+    Category category = categoryRepository.findById(id).orElseThrow(() -> new RuntimeException("Category Not Found"));
+    return CategoryMapper.toCategoryDto(category);
+
+}
+public String deleteById(Long id){
+    categoryRepository.deleteById(id);
+    return "Category"+ id + " Deleted";
+}
+
 }
