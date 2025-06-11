@@ -3,6 +3,7 @@ package com.bitsandbites.service;
 import com.bitsandbites.dto.ProductDto;
 import com.bitsandbites.entity.Category;
 import com.bitsandbites.entity.Product;
+import com.bitsandbites.exception.CategoryNotFoundException;
 import com.bitsandbites.mapper.ProductMapper;
 import com.bitsandbites.repository.CategoryRepository;
 import com.bitsandbites.repository.ProductRepository;
@@ -17,9 +18,10 @@ import java.util.List;
 public class ProductService {
     private ProductRepository productRepository;
     private CategoryRepository categoryRepository;
-    public ProductDto createProduct(ProductDto productDto){
 
-        Category category = categoryRepository.findById(productDto.getCategoryId()).orElseThrow(() -> new RuntimeException("Category Not Found"));
+    public ProductDto createProduct(ProductDto productDto) {
+
+        Category category = categoryRepository.findById(productDto.getCategoryId()).orElseThrow(() -> new CategoryNotFoundException("CategoryId : " + productDto.getCategoryId() + " Not Found"));
         Product productEntity = ProductMapper.toProductEntity(productDto, category);
         Product save = productRepository.save(productEntity);
         ProductDto productDto1 = ProductMapper.toProductDto(save);
@@ -27,14 +29,17 @@ public class ProductService {
 
 
     }
-    public List<ProductDto> getAllProduct(){
-       return productRepository.findAll().stream().map(e->ProductMapper.toProductDto(e)).toList();
+
+    public List<ProductDto> getAllProduct() {
+        return productRepository.findAll().stream().map(e -> ProductMapper.toProductDto(e)).toList();
     }
-    public ProductDto getProductById(Long id){
+
+    public ProductDto getProductById(Long id) {
         Product product = productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product Not Found"));
         return ProductMapper.toProductDto(product);
     }
-    public ProductDto updateProduct(ProductDto productDto,Long id){
+
+    public ProductDto updateProduct(ProductDto productDto, Long id) {
         Product product = productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product Not Found"));
         Category category = categoryRepository.findById(productDto.getCategoryId()).orElseThrow(() -> new RuntimeException("Category Not Found"));
         product.setName(productDto.getName());
@@ -44,7 +49,8 @@ public class ProductService {
         productRepository.save(product);
         return ProductMapper.toProductDto(product);
     }
-    public String deteteProduct(Long id){
+
+    public String deteteProduct(Long id) {
         productRepository.deleteById(id);
         return "Product Has Been Deleted";
 
